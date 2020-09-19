@@ -1,0 +1,1 @@
+Viene por defecto en django si has usado: django-admin startproject nombreProyecto

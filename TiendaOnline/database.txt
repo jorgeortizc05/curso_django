@@ -1,0 +1,93 @@
+#Base de datos.
+DJANGO no puede crear las tablas si no esta dentro de una startapp
+
+*Añadir postgresql
+-Instalar libreria
+pip install psycopg2 #Por alguna razon me da errores
+pip install psycopg2-binary #esta si funciona
+
+-Cambiar settings.py seccion database. 
+Pasar de esto.
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
+A esto
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'GestionPedidos',                      
+        'USER': 'jorge',
+        'PASSWORD': 'jorge',
+        'HOST': '192.168.0.6',
+        'DATABASE_PORT': '5432',
+    }
+}
+Si tienes error usar este mejor
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'db_name',                      
+        'USER': 'db_user',
+        'PASSWORD': 'db_user_password',
+        'HOST': '',
+        'PORT': 'db_port_number',
+    }
+}
+
+*Prepara las tablas a base de models.py. Si hay cambios en el modelo hay que ejecutar nuevamente,
+si ingresastes un nuevo metodo o funcion hay que ejecutarlo de nuevo
+python manage.py makemigrations #cada makemigrations me crear un numero de migracion para usarl sqlmigrate
+. gestionPedidos/migrations/numeroMigration_auto_20200918_1913.py
+
+*Me genera las sentencias sql
+python manage.py sqlmigrate gestionPedidos numeroMigracion
+
+*Meto en un gestor de base de datos "setting.py". Default sqllite3 
+python manage.py migrate
+
+*Para abrir el shell de DJANGO. Lo uso para manipular la base de datos y hacer pruebas
+python manage.py shell
+-insert into Articulos....
+>>> from gestionPedidos.models import Articulos
+>>> art = Articulos(nombre='mesa',seccion='decoracion',precion=90)
+>>> art.save() #con esto guardo en la base de datos
+>>> art2 = Articulos(nombre='camisa', seccion='confeccion', precion=75)
+>>> art2.save() #guardo un segundo articulo
+>>> art3 = Articulos.objects.create(nombre='taladro', seccion='ferreteria', precion=65) #unica instruccion, equivale a lo anterior
+-Update Articulomaterials....
+>>> art.precion=95
+>>> art.save()
+-Delete * from articulos .....
+>>> art4 = Articulos.objects.get(id=2) #si es texto poner entre comillas simples ''
+>>> art4.delete()
+(1, {'gestionPedidos.Articulos': 1})
+-Select.
+>>> Lista = Articulos.objects.all() #en lista esta almacenado todos los Articulos
+>>> Lista
+<QuerySet [<Articulos: Articulos object (1)>, <Articulos: Articulos object (3)>]>
+>>> Lista.query.__str__()
+'SELECT "gestionPedidos_articulos"."id", "gestionPedidos_articulos"."nombre", "gestionPedidos_articulos"."seccion", "gestionPedidos_articulos"."precion" FROM "gestionPedidos_articulos"'
+
+
+*select where
+>>> Articulos.objects.filter(seccion='deportes')
+<QuerySet [<Articulos: Articulos object (5)>, <Articulos: Articulos object (6)>]>
+*where seccion =decoracion and nombre = mesa
+>>> Articulos.objects.filter(nombre = 'mesa', seccion = 'decoracion')
+<QuerySet [<Articulos: El nombre es mesa la seccion es decoracion y el precio es 90>]>
+*Usar = > <. En shell utiliza < y > y va a dar error, usar __get = > y __let = <
+>>> Articulos.objects.filter(seccion = 'deportes', precio__gte= 100)
+<QuerySet [<Articulos: El nombre es raqueta la seccion es deportes y el precio es 105>]>
+>>> Articulos.objects.filter(seccion = 'deportes', precio__lte= 100)
+<QuerySet [<Articulos: El nombre es balon la seccion es deportes y el precio es 25>]>
+nota: recuerda poner unido el __lte o __gte ex: precio__gte=100
+>>> Articulos.objects.filter(precio__gte=50)
+*order by asc
+>>> Articulos.objects.filter(precio__gte=50)
+<QuerySet [<Articulos: El nombre es mesa la seccion es decoracion y el precio es 90>, <Articulos: El nombre es lampara la seccion es decoracion y el precio es 70>, <Articulos: El nombre es raqueta la seccion es deportes y el precio es 105>, <Articulos: El nombre es sofa la seccion es decoracion y el precio es 350>, <Articulos: El nombre es tren electrico la seccion es jugueteria y el precio es 135>]>
+*order by desc
+>>> Articulos.objects.filter(precio__gte=50).order_by('-precio')
+<QuerySet [<Articulos: El nombre es sofa la seccion es decoracion y el precio es 350>, <Articulos: El nombre es tren electrico la seccion es jugueteria y el precio es 135>, <Articulos: El nombre es raqueta la seccion es deportes y el precio es 105>, <Articulos: El nombre es mesa la seccion es decoracion y el precio es 90>, <Articulos: El nombre es lampara la seccion es decoracion y el precio es 70>]>

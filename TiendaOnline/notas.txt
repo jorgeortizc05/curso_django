@@ -1,0 +1,42 @@
+Django: framework de aplicaciones web open source escrito en python.
+Un framework web es un conjunto de componentes que te ayudan a desarrollar sitios web mas facil y rapidamente
+
+
+*Structure HTML
+HTTP/1.1 200 OK #Version html, http status codes
+Content-Type: text/html #Type Content
+...
+
+HTTP STATUS CODES
+
+status code | Descripcion
+200         |    OK
+301         |    Moved Permanently
+403         |    Forbidden
+404         |    Not Found
+500         |    Internal Server Error
+
+
+*Install Django
+pip3 install django
+
+*Create project
+django-admin startproject PROJECT_NAME
+
+-urls: son routers ex: localhost:8000/routerName
+
+*Run project
+python manage.py runserver
+
+*Startapp
+python manage.py startapp nameStartApp
+
+*Sessiones: Se utilizan para mantener datos de una session, un usuario puede tener muchos tasks, estas no deben ser compartidos.
+
+models.py: para gestionar los modelos
+views.py: para gestionar las vistas.
+
+*Para verificar si no hay errores
+python manage.py check nombreApp
+
+
